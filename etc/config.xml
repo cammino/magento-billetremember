@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Cammino_Billetremember>
+            <version>0.1.0</version>
+        </Cammino_Billetremember>
+    </modules>
+    <global>
+        <models>
+            <billetremember>
+                <class>Cammino_Billetremember_Model</class>
+            </billetremember>
+        </models>
+        <template>
+            <email>
+                <billetremember_email module="Cammino_Billetremember">
+                    <label>Billet Remember</label>
+                    <file>billetremember.html</file>
+                    <type>html</type>
+                </billetremember_email>
+            </email>
+        </template>
+    </global>
+
+    <crontab>
+        <jobs>
+            <billetremember_job>
+                <schedule>
+                    <cron_expr>*/5 * * * *</cron_expr>
+                </schedule>
+                <run>
+                    <model>billetremember/job::notify</model>
+                </run>
+            </billetremember_job>
+        </jobs>
+    </crontab>
+</config>
