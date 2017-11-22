@@ -26,7 +26,7 @@
         <jobs>
             <billetremember_job>
                 <schedule>
-                    <cron_expr>*/5 * * * *</cron_expr>
+                    <cron_expr>0 0,12 * * *</cron_expr>
                 </schedule>
                 <run>
                     <model>billetremember/job::notify</model>
