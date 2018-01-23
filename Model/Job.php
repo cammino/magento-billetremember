@@ -65,7 +65,7 @@ class Cammino_Billetremember_Model_Job
     }
 
     private function getHours() {
-        return 12;
+        return 24;
     }
 
     private function getBilletUrl($payment) {
