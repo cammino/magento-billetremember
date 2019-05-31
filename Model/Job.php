@@ -18,6 +18,10 @@ class Cammino_Billetremember_Model_Job
                 Mage::getModel("billetremember/email")->sendEmail($payments);
             endif;
 
+            if($notifyByWhatsapp):
+                Mage::getModel("billetremember/whatsapp")->sendMessage($payments);
+            endif;
+
 
         endif;
     }

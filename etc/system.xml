@@ -71,6 +71,51 @@
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 						</notify_by_whatsapp>
+
+						<twilio_account_sid translate="label">
+                            <label>Twilio Account SID</label>
+                            <frontend_type>text</frontend_type>
+							<comment>Para poder enviar mensagens pelo whatsapp</comment>
+                            <sort_order>41</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><notify_by_whatsapp>1</notify_by_whatsapp></depends>
+                        </twilio_account_sid>
+						
+						<twilio_auth_token translate="label">
+                            <label>Twilio Auth Token</label>
+                            <frontend_type>text</frontend_type>
+							<comment>Para poder enviar mensagens pelo whatsapp</comment>
+                            <sort_order>42</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><notify_by_whatsapp>1</notify_by_whatsapp></depends>
+                        </twilio_auth_token>
+						
+						<twilio_whatsapp_number translate="label">
+                            <label>Twilio Whatsapp Number</label>
+                            <frontend_type>text</frontend_type>
+							<comment>Para poder enviar mensagens pelo whatsapp</comment>
+                            <sort_order>43</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><notify_by_whatsapp>1</notify_by_whatsapp></depends>
+                        </twilio_whatsapp_number>
+						
+						<whatsapp_body translate="label">
+                            <label>Corpo da mensagem do Whatsapp</label>
+                            <frontend_type>textarea</frontend_type>
+							<comment>Você pode utilizar as variáveis: {{nome_da_loja}} {{nome_do_cliente}}"</comment>
+                            <sort_order>44</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><notify_by_whatsapp>1</notify_by_whatsapp></depends>
+                        </whatsapp_body>
+
 						<active_log translate="label">
 							<label>Habilitar logs</label>
 							<comment>Os logs serão salvos em /var/log/order_notification.log</comment>

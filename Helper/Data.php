@@ -23,6 +23,21 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
         return $hours < 1 ? 24 : $hours;
     }
 
+    public function getTwilioAccountSid() {
+        $sid = Mage::getStoreConfig('sales_email/billetremember/twilio_account_sid');
+        return strlen($sid) > 14 ? $sid : false;
+    }
+    
+    public function getTwilioAuthToken() {
+        $token = Mage::getStoreConfig('sales_email/billetremember/twilio_auth_token');
+        return strlen($token) > 14 ? $token : false;
+    }
+    
+    public function getTwilioWhatsappNumber() {
+        $whatsapp = Mage::getStoreConfig('sales_email/billetremember/twilio_whatsapp_number');
+        return strlen($whatsapp) > 8 ? $whatsapp : false;
+    }
+
     public function renderEmailSubject($customerName) {
         $subject = Mage::getStoreConfig('sales_email/billetremember/email_subject');
         $subject = $this->renderStoreNameVar($subject);
@@ -37,6 +52,14 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
         return $body;
     }
 
+    public function renderWhatsappBody($customerName, $billetUrl) {
+        $body = Mage::getStoreConfig('sales_email/billetremember/whatsapp_body');
+        $body = $this->renderStoreNameVar($body);
+        $body = $this->renderCustomerNameVar($body, $customerName);
+        $body = $body . "\n\n $billetUrl";
+        return $body;
+    }
+
     public function renderStoreNameVar($string) {
         if (strpos($string, "{{nome_da_loja}}") !== false) {
             $storeName = Mage::getStoreConfig('general/store_information/name');
@@ -48,6 +71,15 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
         if (strpos($string, "{{nome_do_cliente}}") !== false) {
             return str_replace("{{nome_do_cliente}}", $customerName ,$string);
         } return $string;
+    }
+
+    public function formatWhatsappNumber($cellphone) {
+        $cellphone = str_replace("(","",$cellphone);
+        $cellphone = str_replace(")","",$cellphone);
+        $cellphone = str_replace(" ","",$cellphone);
+        $cellphone = str_replace("-","",$cellphone);
+        $cellphone = str_replace(".","",$cellphone);
+        return "+55" . $cellphone;
     }
 
 }
