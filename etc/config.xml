@@ -6,6 +6,11 @@
         </Cammino_Billetremember>
     </modules>
     <global>
+        <helpers>
+            <billetremember>
+                <class>Cammino_Billetremember_Helper</class>
+            </billetremember>
+        </helpers>
         <models>
             <billetremember>
                 <class>Cammino_Billetremember_Model</class>
@@ -21,12 +26,22 @@
             </email>
         </template>
     </global>
-
+    <frontend>
+        <routers>
+            <billetremember>
+                <use>standard</use>
+                <args>
+                    <module>Cammino_Billetremember</module>
+                    <frontName>billetremember</frontName>
+                </args>
+            </billetremember>
+        </routers>
+    </frontend>
     <crontab>
         <jobs>
             <billetremember_job>
                 <schedule>
-                    <cron_expr>0 0,12 * * *</cron_expr>
+                    <cron_expr>0 * * * *</cron_expr>
                     <!-- <cron_expr>*/2 * * * *</cron_expr> -->
                 </schedule>
                 <run>
@@ -35,4 +50,19 @@
             </billetremember_job>
         </jobs>
     </crontab>
+    <default>
+        <sales_email>
+            <billetremember>
+                <hours>24</hours>
+                <email_subject>Lembrete: Hoje vence o boleto do pedido feito ontem na {{nome_da_loja}}.</email_subject>
+                <email_body>Olá Fulano, Tudo bem?
+
+Gostaria de agradecer o seu pedido feito em nossa loja virtual e também aproveito esta oportunidade para fazer um lembrete.
+
+Vimos que você optou por pagar com boleto bancário, os nossos boletos tem apenas 1 dia útil para vencimento, portanto, não deixe de pagar ainda hoje e garantir a entrega do seu produto.
+
+Caso já tenha feito o pagamento, você pode desconsiderar essa mensagem.</email_body>
+            </billetremember>
+        </sales_email>    
+    </default>
 </config>

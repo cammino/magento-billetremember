@@ -2,23 +2,29 @@
 class Cammino_Billetremember_Model_Job
 {
     public function notify() {
-        $payments = $this->getBilletOrders();
 
-        foreach( $payments as $payment ) {
-            $sent = $this->sendEmail( $payment );
+        $helper = Mage::helper("billetremember");
+        
+        $moduleIsActive     = $helper->moduleIsActive();
+        $notifyByEmail      = $helper->notifyByEmail();
+        $notifyByWhatsapp   = $helper->notifyByWhatsapp();
+        $logIsActive        = $helper->logsIsActive();
+        
+        if($moduleIsActive && ($notifyByEmail || $notifyByWhatsapp)):
 
-            if( $sent ){
-                $addata = unserialize($payment->getData( "additional_data" ));
-                $addata[ 'billetremember' ] = true;
-                $payment->setAdditionalData( serialize( $addata ) )->save();
-            }
-        }
+            $payments = $this->getBilletOrders();
+
+            if($notifyByEmail):
+                Mage::getModel("billetremember/email")->sendEmail($payments);
+            endif;
+
+
+        endif;
     }
 
     private function getBilletOrders() {
-        $payments = Mage::getModel( 'sales/order_payment' )->getCollection();  
-       
-        $hours = $this->getHours();
+        $payments = Mage::getModel( 'sales/order_payment' )->getCollection();
+        $hours = Mage::helper("billetremember")->getHours();
         
         $payments->getSelect()
             ->where('pagarme_boleto_url IS NOT NULL')
@@ -31,50 +37,7 @@ class Cammino_Billetremember_Model_Job
         return $payments;
     }
 
-    private function sendEmail($payment) {
-        $orderId = $payment->getParentId();
-
-        $order = $order = Mage::getModel( "sales/order" )->load($orderId);
-        $storeId = $order->getStore()->getId();
-
-        $customerName = $order->getCustomerFirstname();
-        $customerEmail = $order->getCustomerEmail();
-        $billetUrl = $this->getBilletUrl($payment);
-
-        $mailer = Mage::getModel( 'core/email_template_mailer' );
-        $emailInfo = Mage::getModel( 'core/email_info' );
-        
-        try{
-            $emailInfo->addTo( $customerEmail, $customerName );
-            $mailer->addEmailInfo( $emailInfo );
-            $mailer->setSender( Mage::getStoreConfig( Mage_Sales_Model_Order::XML_PATH_EMAIL_IDENTITY, $storeId ) );
-            $mailer->setStoreId( $storeId );
-            $mailer->setTemplateId( "billetremember_email" );
-            $mailer->setTemplateParams(array(
-                'customerName' => $customerName,
-                'billetUrl'   => $billetUrl
-            ));
-
-            $sent = $mailer->send();
-            Mage::log( $sent, null, 'billetremember.log' );
-            return true;
-
-        }
-        catch( Exception $e ) {
-            Mage::log( $sent, null, 'billetremember.log' );
-            Mage::log( $e->getMessage(), null, 'billetremember.log' );
-            return false;
-        }
-    }
-
-    private function getHours() {
-        $hora = Mage::getStoreConfig( 'sales_email/billetremember/hours' );
-
-        return $hora;
-        // return 24;
-    }
-
-    private function getBilletUrl( $payment ) {
+    public function getBilletUrl( $payment ) {
         return $payment->getPagarmeBoletoUrl();
     }
 

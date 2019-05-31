@@ -2,24 +2,85 @@
 <config>
 	<sections>
 		<sales_email>
-			<groups>						
-				<!-- <billetremember translate="label" module="billetremember"> -->
+			<groups>
 				<billetremember translate="label">
 					<label>Lembrete de Boleto</label>
 					<frontend_type>text</frontend_type>
-					<sort_order>1</sort_order>
+					<sort_order>0</sort_order>
 					<show_in_default>1</show_in_default>
 					<show_in_website>1</show_in_website>
 					<show_in_store>1</show_in_store>
 					<fields>
+						<active translate="label">
+							<label>Enabled</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>0</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</active>
 						<hours translate="label">
-							<label>Enviar e-mail de lembrete em horas</label>
+							<label>Enviar lembrete após horas</label>
+							<comment>A mensagem será enviada após X horas antes do boleto vencer. Se não informado, o valor padrão utilizado será de 24 horas</comment>
 							<frontend_type>text</frontend_type>
 							<sort_order>1</sort_order>
 							<show_in_default>1</show_in_default>
 							<show_in_website>1</show_in_website>
 							<show_in_store>1</show_in_store>
 						</hours>
+						
+						<notify_by_email translate="label">
+							<label>Notificar por email</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>20</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</notify_by_email>
+
+						<email_subject translate="label">
+                            <label>Assunto do email</label>
+							<comment>Você pode utilizar as variáveis: {{nome_da_loja}} {{nome_do_cliente}}"</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>21</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><notify_by_email>1</notify_by_email></depends>
+                        </email_subject>
+
+						<email_body translate="label">
+                            <label>Corpo do email</label>
+							<comment>Você pode utilizar as variáveis: {{nome_da_loja}} {{nome_do_cliente}}"</comment>
+                            <frontend_type>textarea</frontend_type>
+                            <sort_order>22</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><notify_by_email>1</notify_by_email></depends>
+                        </email_body>
+
+						<notify_by_whatsapp translate="label">
+							<label>Notificar por whatsapp</label>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>40</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</notify_by_whatsapp>
+						<active_log translate="label">
+							<label>Habilitar logs</label>
+							<comment>Os logs serão salvos em /var/log/order_notification.log</comment>
+							<frontend_type>select</frontend_type>
+							<source_model>adminhtml/system_config_source_yesno</source_model>
+							<sort_order>999999</sort_order>
+							<show_in_default>1</show_in_default>
+							<show_in_website>1</show_in_website>
+							<show_in_store>1</show_in_store>
+						</active_log>
 					</fields>
 				</billetremember>				
 			</groups>
