@@ -14,8 +14,12 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
         return (bool) Mage::getStoreConfig('sales_email/billetremember/notify_by_whatsapp');
     }
 
-    public function logsIsActive() {
+    public function logIsActive() {
         return (bool) Mage::getStoreConfig('sales_email/billetremember/active_log');
+    }
+
+    public function log($message) {
+        Mage::log($message, null, "billetremember.log");
     }
 
     public function getHours() {

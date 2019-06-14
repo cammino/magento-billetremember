@@ -3,7 +3,7 @@
 class Cammino_Billetremember_NotifyController extends Mage_Core_Controller_Front_Action
 {
     /**
-    * Function responsible controller index action
+    * Function responsible for start notify process
     *
     * @return null
     */

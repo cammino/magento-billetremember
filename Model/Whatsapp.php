@@ -28,26 +28,48 @@ class Cammino_Billetremember_Model_Whatsapp
                     $customer = Mage::getModel('customer/customer')->load($customerId);
                     
                     $customerName = $customer->getFirstname();
-                    $cellphone = $customer->getPrimaryBillingAddress()->getTelephone();
-                    $cellphone = $helper->formatWhatsappNumber($cellphone);
                     
-                    $message = $helper->renderWhatsappBody($customerName, $billetUrl);
-                    
-                    $sent = $twilio->messages->create(
-                        "whatsapp:" . $cellphone,
-                        array(
-                            "from" => "whatsapp:" . $twilioWhatsapp,
-                            "body" => $message
-                        )
-                    );
+                    // try to get cellphone
+                    $cellphone = $customer->getPrimaryBillingAddress()->getFax();
+                    if (strlen($cellphone) < 8) {
+                        // try to get telephone
+                        $cellphone = $customer->getPrimaryBillingAddress()->getTelephone();
+                        if(strlen($cellphone < 8)) {
+                            $cellphone = false;
+                        }
+                    }
 
-                    if($sent->sid) {
-                        $addata = unserialize($payment->getData("additional_data"));
-                        $addata["billetremember"] = true;
-                        $payment->setAdditionalData(serialize($addata))->save();
+                    if($cellphone != false) {
+                        $cellphone = $helper->formatWhatsappNumber($cellphone);
+                        $message = $helper->renderWhatsappBody($customerName, $billetUrl);
+                        $sent = $twilio->messages->create(
+                            "whatsapp:" . $cellphone,
+                            array(
+                                "from" => "whatsapp:" . $twilioWhatsapp,
+                                "body" => $message
+                            )
+                        );
+
+                        if($sent->sid) {
+                            $addata = unserialize($payment->getData("additional_data"));
+                            $addata["billetremember"] = true;
+                            $payment->setAdditionalData(serialize($addata))->save();
+
+                            if($helper->logIsActive()) {
+                                $helper->log("Whatsapp enviado, cliente: " . $customerId . ", pedido: " . $orderId);
+                                $helper->log("Mensagem: " . $message);
+                            }
+
+                        } else { 
+                            $helper->log("Whatsapp não pode ser enviado, cliente: " . $customerId . ", pedido: " . $orderId);
+                            $helper->log($sent);
+                        }
+                    } else {
+                        $helper->log("Telefone inválido para enviar whatsapp para o cliente: " . $customerId . ", para o pedido: " . $orderId);
                     }
                     
                 } catch (Exception $e) {
+                    $helper->log($e->getMessage());
                     return false;
                 }
 

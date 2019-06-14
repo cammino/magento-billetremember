@@ -8,7 +8,6 @@ class Cammino_Billetremember_Model_Job
         $moduleIsActive     = $helper->moduleIsActive();
         $notifyByEmail      = $helper->notifyByEmail();
         $notifyByWhatsapp   = $helper->notifyByWhatsapp();
-        $logIsActive        = $helper->logsIsActive();
         
         if($moduleIsActive && ($notifyByEmail || $notifyByWhatsapp)):
 
@@ -21,7 +20,6 @@ class Cammino_Billetremember_Model_Job
             if($notifyByWhatsapp):
                 Mage::getModel("billetremember/whatsapp")->sendMessage($payments);
             endif;
-
 
         endif;
     }
