@@ -55,7 +55,7 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
         $cellphone = $customer->getPrimaryBillingAddress()->getFax();
         if (strlen($cellphone) < 8) {
             $cellphone = $customer->getPrimaryBillingAddress()->getTelephone();
-            if(strlen($cellphone < 8)) {
+            if (strlen($cellphone) < 8) {
                 $cellphone = false;
             }
         }
