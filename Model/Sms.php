@@ -1,7 +1,7 @@
 <?php
 use Twilio\Rest\Client;
 
-class Cammino_Billetremember_Model_Whatsapp
+class Cammino_Billetremember_Model_Sms
 {
     public function sendMessage($payments) {
 
@@ -11,9 +11,9 @@ class Cammino_Billetremember_Model_Whatsapp
 
         $sid = $helper->getTwilioAccountSid();
         $token = $helper->getTwilioAuthToken();
-        $twilioWhatsapp = $helper->getTwilioWhatsappNumber();
+        $twilioSMS = $helper->getTwilioSMSNumber();
 
-        if($sid && $token && $twilioWhatsapp):
+        if($sid && $token && $twilioSMS):
             $twilio = new Client($sid, $token);
             
             foreach($payments as $payment):
@@ -27,15 +27,15 @@ class Cammino_Billetremember_Model_Whatsapp
                     $customer = Mage::getModel('customer/customer')->load($customerId);
                     
                     $customerName = $customer->getFirstname();
-                    $cellphone = $helper->getCustomerCellphone($customer);                
+                    $cellphone = $helper->getCustomerCellphone($customer);
 
                     if($cellphone != false) {
                         $cellphone = $helper->cellphoneToTwillioFormat($cellphone);
-                        $message = $helper->renderWhatsappBody($customerName, $billetUrl);
+                        $message = $helper->renderSMSBody($customerName, $billetUrl);
                         $sent = $twilio->messages->create(
-                            "whatsapp:" . $cellphone,
+                            $cellphone,
                             array(
-                                "from" => "whatsapp:" . $twilioWhatsapp,
+                                "from" => $twilioSMS,
                                 "body" => $message
                             )
                         );
@@ -46,16 +46,16 @@ class Cammino_Billetremember_Model_Whatsapp
                             $payment->setAdditionalData(serialize($addata))->save();
 
                             if($helper->logIsActive()) {
-                                $helper->log("Whatsapp enviado, cliente: " . $customerId . ", pedido: " . $orderId);
+                                $helper->log("SMS enviado, cliente: " . $customerId . ", pedido: " . $orderId);
                                 $helper->log("Mensagem: " . $message);
                             }
 
                         } else { 
-                            $helper->log("Whatsapp não pode ser enviado, cliente: " . $customerId . ", pedido: " . $orderId);
+                            $helper->log("SMS não pode ser enviado, cliente: " . $customerId . ", pedido: " . $orderId);
                             $helper->log($sent);
                         }
                     } else {
-                        $helper->log("Telefone inválido para enviar whatsapp para o cliente: " . $customerId . ", para o pedido: " . $orderId);
+                        $helper->log("Telefone inválido para enviar sms para o cliente: " . $customerId . ", para o pedido: " . $orderId);
                     }
                     
                 } catch (Exception $e) {

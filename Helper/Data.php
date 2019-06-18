@@ -3,19 +3,23 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
 {
 
     public function moduleIsActive() {
-        return (bool) Mage::getStoreConfig('sales_email/billetremember/active');
+        return (bool) Mage::getStoreConfig('billetremember/general/active');
     }
     
     public function notifyByEmail() {
-        return (bool) Mage::getStoreConfig('sales_email/billetremember/notify_by_email');
+        return (bool) Mage::getStoreConfig('billetremember/email/notify');
     }
     
     public function notifyByWhatsapp() {
-        return (bool) Mage::getStoreConfig('sales_email/billetremember/notify_by_whatsapp');
+        return (bool) Mage::getStoreConfig('billetremember/whatsapp/notify');
+    }
+    
+    public function notifyBySMS() {
+        return (bool) Mage::getStoreConfig('billetremember/sms/notify');
     }
 
     public function logIsActive() {
-        return (bool) Mage::getStoreConfig('sales_email/billetremember/active_log');
+        return (bool) Mage::getStoreConfig('billetremember/general/active_log');
     }
 
     public function log($message) {
@@ -23,41 +27,65 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
     }
 
     public function getHours() {
-        $hours = intval(Mage::getStoreConfig('sales_email/billetremember/hours'));
+        $hours = intval(Mage::getStoreConfig('billetremember/general/hours'));
         return $hours < 1 ? 24 : $hours;
     }
 
     public function getTwilioAccountSid() {
-        $sid = Mage::getStoreConfig('sales_email/billetremember/twilio_account_sid');
+        $sid = Mage::getStoreConfig('billetremember/general/twilio_account_sid');
         return strlen($sid) > 14 ? $sid : false;
     }
     
     public function getTwilioAuthToken() {
-        $token = Mage::getStoreConfig('sales_email/billetremember/twilio_auth_token');
+        $token = Mage::getStoreConfig('billetremember/general/twilio_auth_token');
         return strlen($token) > 14 ? $token : false;
     }
     
     public function getTwilioWhatsappNumber() {
-        $whatsapp = Mage::getStoreConfig('sales_email/billetremember/twilio_whatsapp_number');
+        $whatsapp = Mage::getStoreConfig('billetremember/whatsapp/twilio_number');
         return strlen($whatsapp) > 8 ? $whatsapp : false;
+    }
+    
+    public function getTwilioSMSNumber() {
+        $sms = Mage::getStoreConfig('billetremember/sms/twilio_number');
+        return strlen($sms) > 8 ? $sms : false;
+    }
+
+    public function getCustomerCellphone($customer) {
+        $cellphone = $customer->getPrimaryBillingAddress()->getFax();
+        if (strlen($cellphone) < 8) {
+            $cellphone = $customer->getPrimaryBillingAddress()->getTelephone();
+            if(strlen($cellphone < 8)) {
+                $cellphone = false;
+            }
+        }
+        return $cellphone;
     }
 
     public function renderEmailSubject($customerName) {
-        $subject = Mage::getStoreConfig('sales_email/billetremember/email_subject');
+        $subject = Mage::getStoreConfig('billetremember/email/subject');
         $subject = $this->renderStoreNameVar($subject);
         $subject = $this->renderCustomerNameVar($subject, $customerName);
         return $subject;
     }
     
     public function renderEmailBody($customerName) {
-        $body = Mage::getStoreConfig('sales_email/billetremember/email_body');
+        $body = Mage::getStoreConfig('billetremember/email/body');
         $body = $this->renderStoreNameVar($body);
         $body = $this->renderCustomerNameVar($body, $customerName);
         return $body;
     }
 
     public function renderWhatsappBody($customerName, $billetUrl) {
-        $body = Mage::getStoreConfig('sales_email/billetremember/whatsapp_body');
+        $body = Mage::getStoreConfig('billetremember/whatsapp/body');
+        $body = $this->renderStoreNameVar($body);
+        $body = $this->renderCustomerNameVar($body, $customerName);
+        $body = $body . "\n\n $billetUrl";
+        return $body;
+    }
+
+    public function renderSMSBody($customerName, $billetUrl) {
+        $body = Mage::getStoreConfig('billetremember/sms/body');
         $body = $this->renderStoreNameVar($body);
         $body = $this->renderCustomerNameVar($body, $customerName);
         $body = $body . "\n\n $billetUrl";
@@ -77,7 +105,7 @@ class Cammino_Billetremember_Helper_Data extends Mage_Core_Helper_Abstract
         } return $string;
     }
 
-    public function formatWhatsappNumber($cellphone) {
+    public function cellphoneToTwillioFormat($cellphone) {
         $cellphone = str_replace("(","",$cellphone);
         $cellphone = str_replace(")","",$cellphone);
         $cellphone = str_replace(" ","",$cellphone);
