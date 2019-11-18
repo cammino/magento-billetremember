@@ -36,7 +36,7 @@ class Cammino_Billetremember_Model_Job
         $hours = Mage::helper("billetremember")->getHours();
         
         $payments->getSelect()
-            ->where('state = \'new\' ')
+            ->where('amount_paid IS NULL')
             ->where('pagarme_boleto_url IS NOT NULL')
             ->where('DATE(pagarme_boleto_expiration_date) >= DATE(NOW())')
             ->where('DATE_ADD(pagarme_boleto_expiration_date, INTERVAL -'.$hours.' HOUR) < NOW()')
