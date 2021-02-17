@@ -18,7 +18,7 @@
         </models>
         <template>
             <email>
-                <billetremember_email module="Cammino_Billetremember">
+                <billetremember_email module="billetremember">
                     <label>Billet Remember</label>
                     <file>billetremember.html</file>
                     <type>html</type>
