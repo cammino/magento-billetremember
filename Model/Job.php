@@ -16,6 +16,10 @@ class Cammino_Billetremember_Model_Job
 
             $payments = $this->getBilletOrders();
 
+            if(empty($payments)) {
+                return;
+            }
+
             if($notifyByEmail):
                 Mage::getModel("billetremember/email")->sendEmail($payments);
             endif;
@@ -53,6 +57,19 @@ class Cammino_Billetremember_Model_Job
                 ->where('DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY) >= DATE(NOW())')
                 ->where('DATE_ADD(DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY), INTERVAL -'.$hours.' HOUR) < NOW()')
                 ->where('((main_table.additional_data IS NULL) OR (main_table.additional_data NOT LIKE \'%billetremember%\'))');
+        } else if((bool)Mage::getStoreConfig('payment/traycheckoutapi_bankslip/active')) {
+            $expiration = 3;
+            $payments->getSelect()
+                ->joinInner(array('order' => Mage::getSingleton('core/resource')->getTableName('sales/order')),
+                    'order.entity_id = main_table.parent_id',
+                    array())
+                ->where('main_table.amount_paid IS NULL')
+                ->where('main_table.method = \'traycheckoutapi_slip\'')
+                ->where('DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY) >= DATE(NOW())')
+                ->where('DATE_ADD(DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY), INTERVAL -'.$hours.' HOUR) < NOW()')
+                ->where('((main_table.additional_data IS NULL) OR (main_table.additional_data NOT LIKE \'%billetremember%\'))');
+        } else {
+            return array();
         }
 
         echo $payments->getSelect()->__toString();
