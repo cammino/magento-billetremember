@@ -68,7 +68,19 @@ class Cammino_Billetremember_Model_Job
                 ->where('DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY) >= DATE(NOW())')
                 ->where('DATE_ADD(DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY), INTERVAL -'.$hours.' HOUR) < NOW()')
                 ->where('((main_table.additional_data IS NULL) OR (main_table.additional_data NOT LIKE \'%billetremember%\'))');
-        } else {
+            } else if((bool)Mage::getStoreConfig('mundipagg_config/boleto_group/boleto_status')) {
+                $expiration = Mage::getStoreConfig('mundipagg_config/boleto_group/boleto_due_at');
+                $payments->getSelect()
+                    ->joinInner(array('order' => Mage::getSingleton('core/resource')->getTableName('sales/order')),
+                        'order.entity_id = main_table.parent_id',
+                        array())
+                    ->where('main_table.amount_paid IS NULL')
+                    ->where('main_table.method = \'paymentmodule_boleto\'')
+                    ->where('DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY) >= DATE(NOW())')
+                    ->where('DATE_ADD(DATE_ADD(order.created_at, INTERVAL '.$expiration.' DAY), INTERVAL -'.$hours.' HOUR) < NOW()')
+                    ->where('((main_table.additional_data IS NULL) OR (main_table.additional_data NOT LIKE \'%billetremember%\'))');
+            }
+         else {
             return array();
         }
 
